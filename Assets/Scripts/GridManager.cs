@@ -32,7 +32,7 @@ public class GridManager : MonoBehaviour
                     {
                         blockGrid[0].Add(block);
                         lastUsedRow = 0;
-                        block.targetPos = new Vector3((blockGrid[0].Count - 1) * sizeX, 0, 0);
+                        block.SetTargetPosition(new Vector3((blockGrid[0].Count - 1) * sizeX, 0, 0));
                         break;
                     }
                     else
@@ -41,7 +41,7 @@ public class GridManager : MonoBehaviour
                         {
                             blockGrid[z].Add(block);
                             lastUsedRow = z;
-                            block.targetPos = new Vector3((blockGrid[z].Count - 1) * sizeX, 0, z * sizeZ);
+                            block.SetTargetPosition(new Vector3((blockGrid[z].Count - 1) * sizeX, 0, z * sizeZ));
                             break;
                         }
                     }
@@ -51,7 +51,7 @@ public class GridManager : MonoBehaviour
             {
                 blockGrid[0].Add(block);
                 lastUsedRow = 0;
-                block.targetPos = new Vector3((blockGrid[0].Count - 1) * sizeX, 0, 0);
+                block.SetTargetPosition(new Vector3((blockGrid[0].Count - 1) * sizeX, 0, 0));
             }
 
         }
@@ -60,7 +60,7 @@ public class GridManager : MonoBehaviour
             blockGrid.Add(new List<Block>());
             blockGrid[blockGrid.Count - 1].Add(block);
             lastUsedRow = blockGrid.Count - 1;
-            block.targetPos = new Vector3(0, 0, (blockGrid.Count - 1) * sizeZ);
+            block.SetTargetPosition(new Vector3(0, 0, (blockGrid.Count - 1) * sizeZ));
         }
         else if (blockGrid[0].Count == blockGrid[blockGrid.Count - 2].Count)
         {
@@ -70,7 +70,7 @@ public class GridManager : MonoBehaviour
                 {
                     blockGrid[blockGrid.Count - 1].Add(block);
                     lastUsedRow = blockGrid.Count - 1;
-                    block.targetPos = new Vector3((blockGrid[blockGrid.Count - 1].Count - 1) * sizeX, 0, (blockGrid.Count - 1) * sizeZ);
+                    block.SetTargetPosition(new Vector3((blockGrid[blockGrid.Count - 1].Count - 1) * sizeX, 0, (blockGrid.Count - 1) * sizeZ));
                     break;
                 }
             }
@@ -84,25 +84,24 @@ public class GridManager : MonoBehaviour
             {
                 if (blockGrid[lastUsedRow][lastUsedColumn].type == blockGrid[lastUsedRow][lastUsedColumn - 1].type)
                 {
-                    if (blockGrid[lastUsedRow][lastUsedColumn].type == blockGrid[lastUsedRow - 1][lastUsedColumn].type)
+                    if (blockGrid[lastUsedRow][lastUsedColumn].scale == blockGrid[lastUsedRow][lastUsedColumn - 1].scale)
                     {
-                        if (blockGrid[lastUsedRow][lastUsedColumn].type == blockGrid[lastUsedRow - 1][lastUsedColumn - 1].type)
+                        if (blockGrid[lastUsedRow][lastUsedColumn].type == blockGrid[lastUsedRow - 1][lastUsedColumn].type)
                         {
-                            StartCoroutine(Merge(block, blockGrid[lastUsedRow][lastUsedColumn - 1], blockGrid[lastUsedRow - 1][lastUsedColumn], blockGrid[lastUsedRow - 1][lastUsedColumn - 1]));
-
-                            switch (blockGrid[lastUsedRow][lastUsedColumn].type)
+                            if (blockGrid[lastUsedRow][lastUsedColumn].scale == blockGrid[lastUsedRow - 1][lastUsedColumn].scale)
                             {
-                                case 1:
-                                    blockGrid[lastUsedRow][lastUsedColumn].type = 11;
-                                    break;
-                                case 2:
-                                    blockGrid[lastUsedRow][lastUsedColumn].type = 22;
-                                    break;
-                            }
+                                if (blockGrid[lastUsedRow][lastUsedColumn].type == blockGrid[lastUsedRow - 1][lastUsedColumn - 1].type)
+                                {
+                                    if (blockGrid[lastUsedRow][lastUsedColumn].scale == blockGrid[lastUsedRow - 1][lastUsedColumn - 1].scale)
+                                    {
+                                        StartCoroutine(Merge(block, blockGrid[lastUsedRow][lastUsedColumn - 1], blockGrid[lastUsedRow - 1][lastUsedColumn], blockGrid[lastUsedRow - 1][lastUsedColumn - 1]));
 
-                            blockGrid[lastUsedRow][lastUsedColumn - 1] = block;
-                            blockGrid[lastUsedRow - 1][lastUsedColumn] = block;
-                            blockGrid[lastUsedRow - 1][lastUsedColumn - 1] = block;
+                                        blockGrid[lastUsedRow][lastUsedColumn - 1] = block;
+                                        blockGrid[lastUsedRow - 1][lastUsedColumn] = block;
+                                        blockGrid[lastUsedRow - 1][lastUsedColumn - 1] = block;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -120,6 +119,6 @@ public class GridManager : MonoBehaviour
         Destroy(blockOnTop.gameObject);
         Destroy(blockOnLeftTop.gameObject);
 
-        blockPivot.RefreshType();
+        blockPivot.Merge();
     }
 }

@@ -7,10 +7,10 @@ public class CameraTarget : MonoBehaviour
         List<float> allX = new List<float>();
         List<float> allZ = new List<float>();
 
-        for (int i = 0; i < this.transform.parent.childCount; i++)
+        foreach (Block block in this.transform.parent.GetComponentsInChildren<Block>())
         {
-            allX.Add(this.transform.parent.GetChild(i).transform.localPosition.x);
-            allZ.Add(this.transform.parent.GetChild(i).transform.localPosition.z);
+            allX.Add(block.GetTargetPosition().x);
+            allZ.Add(block.GetTargetPosition().z);
         }
 
         float sizeX = (Mathf.Max(allX.ToArray()) - Mathf.Min(allX.ToArray()));
@@ -18,9 +18,10 @@ public class CameraTarget : MonoBehaviour
 
         Vector2 center = new Vector2(sizeX / 2, sizeZ / 2);
 
-        float distance = (sizeX * sizeZ) / 2;
+        float distance = sizeX + sizeZ;
 
         this.transform.localPosition = new Vector3(center.x, 0, center.y);
-        Camera.main.GetComponent<CameraController>().distance = 60 + (distance / 4);
+        CameraController cameraController = Camera.main.GetComponent<CameraController>();
+        cameraController.distance = 80 + distance;
     }
 }
