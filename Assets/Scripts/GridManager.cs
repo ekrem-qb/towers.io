@@ -108,7 +108,10 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        target.CenterCamera();
+        if (target)
+        {
+            target.CenterCamera();
+        }
     }
 
     IEnumerator Merge(Block blockPivot, Block blockOnLeft, Block blockOnTop, Block blockOnLeftTop)

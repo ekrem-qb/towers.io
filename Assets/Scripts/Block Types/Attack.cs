@@ -34,9 +34,12 @@ public class Attack : MonoBehaviour
         {
             if (nearestBlock)
             {
-                if (Vector3.Distance(this.transform.position, block.transform.position) < Vector3.Distance(this.transform.position, nearestBlock.transform.position))
+                if (block)
                 {
-                    nearestBlock = block;
+                    if (Vector3.Distance(this.transform.position, block.transform.position) < Vector3.Distance(this.transform.position, nearestBlock.transform.position))
+                    {
+                        nearestBlock = block;
+                    }
                 }
             }
             else
