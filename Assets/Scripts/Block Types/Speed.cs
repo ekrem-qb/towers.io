@@ -4,7 +4,7 @@ public class Speed : MonoBehaviour
     Player player;
     public float speedValue;
     public float rotateSpeed;
-    void Start()
+    void OnEnable()
     {
         player = this.GetComponentInParent<Player>();
         if (player)

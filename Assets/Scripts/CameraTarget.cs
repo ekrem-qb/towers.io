@@ -18,7 +18,7 @@ public class CameraTarget : MonoBehaviour
 
         Vector2 center = new Vector2(sizeX / 2, sizeZ / 2);
 
-        float distance = sizeX + sizeZ;
+        float distance = (sizeX + sizeZ) * 2;
 
         this.transform.localPosition = new Vector3(center.x, 0, center.y);
         CameraController cameraController = Camera.main.GetComponent<CameraController>();

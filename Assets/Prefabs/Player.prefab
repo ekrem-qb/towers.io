@@ -138,8 +138,8 @@ MonoBehaviour:
   blockPrefab: {fileID: 6228101145582832836, guid: 45080bb02691ca841b9dc325d4b68d8a,
     type: 3}
   blockTypes:
-  - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
   - {fileID: 7508269769143104667, guid: a6411dd8f69826e4c9c5482ab286a569, type: 3}
+  - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
   - {fileID: 1486985493604394530, guid: 34ce55a742eee124cab6460cd25b3680, type: 3}
   generateCount: 30
   randomMinRadius: 50

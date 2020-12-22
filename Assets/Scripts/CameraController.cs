@@ -6,6 +6,9 @@ public class CameraController : MonoBehaviour
     public float followingSpeed;
     void Update()
     {
-        this.transform.position = Vector3.Slerp(this.transform.position, (-this.transform.forward * distance) + target.position, Time.deltaTime * followingSpeed);
+        if (target)
+        {
+            this.transform.position = Vector3.Slerp(this.transform.position, (-this.transform.forward * distance) + target.position, Time.deltaTime * followingSpeed);
+        }
     }
 }

@@ -6,7 +6,7 @@ public class Health : MonoBehaviour
     Player player;
     public float healthValue;
     public float rotateSpeed;
-    void Start()
+    void OnEnable()
     {
         player = this.GetComponentInParent<Player>();
         if (player)

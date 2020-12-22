@@ -41,6 +41,14 @@ public class Player : MonoBehaviour
                 healthMeter.text = "❤ " + health;
             }
         }
+        if (health < 1)
+        {
+            foreach (Block block in this.GetComponentsInChildren<Block>())
+            {
+                block.Disconnect();
+            }
+            Destroy(this.gameObject);
+        }
     }
     public void AddMaxHealth(float addValue)
     {

@@ -9,7 +9,12 @@ public class Block : MonoBehaviour
     public int scale = 1;
     public bool isConnected;
     public MeshRenderer meshRenderer;
+    Material defaultMaterial;
     Player player;
+    void Awake()
+    {
+        defaultMaterial = meshRenderer.material;
+    }
     void Start()
     {
         player = this.GetComponentInParent<Player>();
@@ -52,7 +57,10 @@ public class Block : MonoBehaviour
                     if (!block.isConnected)
                     {
                         this.GetComponentInParent<GridManager>().AddBlock(block);
-                        block.transform.GetChild(0).GetComponents<Behaviour>()[0].enabled = true;
+                        if (block.transform.childCount > 0)
+                        {
+                            block.transform.GetChild(0).GetComponents<Behaviour>()[0].enabled = true;
+                        }
                         block.isConnected = true;
                         block.player = this.player;
                         block.meshRenderer.material = this.meshRenderer.material;
@@ -77,5 +85,16 @@ public class Block : MonoBehaviour
     public Vector3 GetTargetPosition()
     {
         return targetPos;
+    }
+    public void Disconnect()
+    {
+        player = null;
+        isConnected = false;
+        meshRenderer.material = defaultMaterial;
+        if (this.transform.childCount > 0)
+        {
+            this.transform.GetChild(0).GetComponents<Behaviour>()[0].enabled = false;
+        }
+        this.transform.SetParent(this.transform.parent.parent);
     }
 }

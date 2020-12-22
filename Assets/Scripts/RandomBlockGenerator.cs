@@ -21,10 +21,13 @@ public class RandomBlockGenerator : MonoBehaviour
             block.transform.position = new Vector3(randomPos2D.x, this.transform.position.y, randomPos2D.y);
             block.transform.eulerAngles = new Vector3(0, Random.Range(0f, 360f), 0);
             block.type = Random.Range(0, blockTypes.Count);
-            GameObject blockMod = Instantiate(blockTypes[block.type]);
-            blockMod.transform.SetParent(block.transform);
-            blockMod.transform.localPosition = new Vector3(0, 1, 0);
-            blockMod.transform.localEulerAngles = new Vector3(0, 0, 0);
+            if (blockTypes[block.type])
+            {
+                GameObject blockMod = Instantiate(blockTypes[block.type]);
+                blockMod.transform.SetParent(block.transform);
+                blockMod.transform.localPosition = new Vector3(0, 1, 0);
+                blockMod.transform.localEulerAngles = new Vector3(0, 0, 0);
+            }
             // foreach (MeshRenderer renderer in blockMod.GetComponentsInChildren<MeshRenderer>())
             // {
             //     if (renderer.GetComponent<MeshFilter>())

@@ -6,10 +6,15 @@ public class Attack : MonoBehaviour
     Player player;
     public float rotateSpeed;
     List<Block> nearBlocks = new List<Block>();
-    public Block nearestBlock;
-    void Start()
+    Block nearestBlock;
+    public ParticleSystem particles;
+    void OnEnable()
     {
         player = this.GetComponentInParent<Player>();
+    }
+    void OnDisable()
+    {
+        particles.Stop();
     }
     void OnTriggerEnter(Collider other)
     {
@@ -30,26 +35,56 @@ public class Attack : MonoBehaviour
     }
     void Update()
     {
-        foreach (Block block in nearBlocks)
+        if (nearBlocks.Count > 0)
         {
+            foreach (Block block in nearBlocks)
+            {
+                if (nearestBlock)
+                {
+                    if (block)
+                    {
+                        if (Vector3.Distance(this.transform.position, block.transform.position) < Vector3.Distance(this.transform.position, nearestBlock.transform.position))
+                        {
+                            nearestBlock = block;
+                        }
+                    }
+                }
+                else
+                {
+                    nearestBlock = block;
+                }
+            }
             if (nearestBlock)
             {
-                if (block)
+                if (nearestBlock.isConnected && !nearestBlock.transform.IsChildOf(this.transform.parent.parent))
                 {
-                    if (Vector3.Distance(this.transform.position, block.transform.position) < Vector3.Distance(this.transform.position, nearestBlock.transform.position))
+                    this.transform.LookAt(nearestBlock.transform);
+                    if (!particles.isPlaying)
                     {
-                        nearestBlock = block;
+                        particles.Play();
                     }
+                    Player enemy = nearestBlock.GetComponentInParent<Player>();
+                    if (enemy)
+                    {
+                        enemy.AddHealth(-1);
+                    }
+                }
+                else
+                {
+                    particles.Stop();
+                    this.transform.localEulerAngles = new Vector3(0, this.transform.localEulerAngles.y + 1, 0);
                 }
             }
             else
             {
-                nearestBlock = block;
+                particles.Stop();
+                this.transform.localEulerAngles = new Vector3(0, this.transform.localEulerAngles.y + 1, 0);
             }
         }
-        if (nearestBlock)
+        else
         {
-            this.transform.LookAt(nearestBlock.transform);
+            particles.Stop();
+            this.transform.localEulerAngles = new Vector3(0, this.transform.localEulerAngles.y + 1, 0);
         }
     }
     void OnTriggerExit(Collider other)
@@ -59,9 +94,9 @@ public class Attack : MonoBehaviour
             Block block = other.GetComponent<Block>();
             if (block)
             {
-                if (!block.transform.IsChildOf(this.transform.parent.parent))
+                if (block.isConnected)
                 {
-                    if (block.isConnected)
+                    if (!block.transform.IsChildOf(this.transform.parent.parent))
                     {
                         nearBlocks.Remove(block);
                     }

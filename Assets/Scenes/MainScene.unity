@@ -962,9 +962,9 @@ Canvas:
   m_GameObject: {fileID: 2034717528}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
+  m_RenderMode: 1
+  m_Camera: {fileID: 963194227}
+  m_PlaneDistance: 10
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -1039,11 +1039,12 @@ MonoBehaviour:
   blockPrefab: {fileID: 6228101145582832836, guid: 45080bb02691ca841b9dc325d4b68d8a,
     type: 3}
   blockTypes:
-  - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
+  - {fileID: 0}
   - {fileID: 7508269769143104667, guid: a6411dd8f69826e4c9c5482ab286a569, type: 3}
+  - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
   - {fileID: 1486985493604394530, guid: 34ce55a742eee124cab6460cd25b3680, type: 3}
   generateCount: 30
-  randomMinRadius: 5
+  randomMinRadius: 1
   randomMaxRadius: 100
 --- !u!1 &2150111085926868830
 GameObject:
@@ -1156,11 +1157,12 @@ MonoBehaviour:
   blockPrefab: {fileID: 6228101145582832836, guid: 45080bb02691ca841b9dc325d4b68d8a,
     type: 3}
   blockTypes:
-  - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
+  - {fileID: 0}
   - {fileID: 7508269769143104667, guid: a6411dd8f69826e4c9c5482ab286a569, type: 3}
+  - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
   - {fileID: 1486985493604394530, guid: 34ce55a742eee124cab6460cd25b3680, type: 3}
   generateCount: 30
-  randomMinRadius: 5
+  randomMinRadius: 1
   randomMaxRadius: 100
 --- !u!114 &2150111086838577288
 MonoBehaviour:
@@ -1205,11 +1207,12 @@ MonoBehaviour:
   blockPrefab: {fileID: 6228101145582832836, guid: 45080bb02691ca841b9dc325d4b68d8a,
     type: 3}
   blockTypes:
-  - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
+  - {fileID: 0}
   - {fileID: 7508269769143104667, guid: a6411dd8f69826e4c9c5482ab286a569, type: 3}
+  - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
   - {fileID: 1486985493604394530, guid: 34ce55a742eee124cab6460cd25b3680, type: 3}
   generateCount: 30
-  randomMinRadius: 5
+  randomMinRadius: 1
   randomMaxRadius: 100
 --- !u!1 &2150111086838577294
 GameObject:
@@ -1267,6 +1270,34 @@ PrefabInstance:
       propertyPath: healthMeter
       value: 
       objectReference: {fileID: 1062609990}
+    - target: {fileID: 2150111087647993882, guid: df8893a48b773304d917cb3f58c060c6,
+        type: 3}
+      propertyPath: blockTypes.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2150111087647993882, guid: df8893a48b773304d917cb3f58c060c6,
+        type: 3}
+      propertyPath: blockTypes.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2150111087647993882, guid: df8893a48b773304d917cb3f58c060c6,
+        type: 3}
+      propertyPath: blockTypes.Array.data[1]
+      value: 
+      objectReference: {fileID: 7508269769143104667, guid: a6411dd8f69826e4c9c5482ab286a569,
+        type: 3}
+    - target: {fileID: 2150111087647993882, guid: df8893a48b773304d917cb3f58c060c6,
+        type: 3}
+      propertyPath: blockTypes.Array.data[2]
+      value: 
+      objectReference: {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd,
+        type: 3}
+    - target: {fileID: 2150111087647993882, guid: df8893a48b773304d917cb3f58c060c6,
+        type: 3}
+      propertyPath: blockTypes.Array.data[3]
+      value: 
+      objectReference: {fileID: 1486985493604394530, guid: 34ce55a742eee124cab6460cd25b3680,
+        type: 3}
     - target: {fileID: 2150111087647993886, guid: df8893a48b773304d917cb3f58c060c6,
         type: 3}
       propertyPath: m_Name
@@ -1378,11 +1409,12 @@ MonoBehaviour:
   blockPrefab: {fileID: 6228101145582832836, guid: 45080bb02691ca841b9dc325d4b68d8a,
     type: 3}
   blockTypes:
-  - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
+  - {fileID: 0}
   - {fileID: 7508269769143104667, guid: a6411dd8f69826e4c9c5482ab286a569, type: 3}
+  - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
   - {fileID: 1486985493604394530, guid: 34ce55a742eee124cab6460cd25b3680, type: 3}
   generateCount: 30
-  randomMinRadius: 5
+  randomMinRadius: 1
   randomMaxRadius: 100
 --- !u!114 &2150111087730546358
 MonoBehaviour:
@@ -1427,12 +1459,12 @@ PrefabInstance:
     - target: {fileID: 6228101145582832832, guid: 45080bb02691ca841b9dc325d4b68d8a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6228101145582832832, guid: 45080bb02691ca841b9dc325d4b68d8a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -104.9
       objectReference: {fileID: 0}
     - target: {fileID: 6228101145582832832, guid: 45080bb02691ca841b9dc325d4b68d8a,
         type: 3}
@@ -1442,7 +1474,7 @@ PrefabInstance:
     - target: {fileID: 6228101145582832832, guid: 45080bb02691ca841b9dc325d4b68d8a,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 92
       objectReference: {fileID: 0}
     - target: {fileID: 6228101145582832832, guid: 45080bb02691ca841b9dc325d4b68d8a,
         type: 3}
@@ -1501,7 +1533,7 @@ PrefabInstance:
     - target: {fileID: 6228101145582832832, guid: 45080bb02691ca841b9dc325d4b68d8a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6228101145582832832, guid: 45080bb02691ca841b9dc325d4b68d8a,
         type: 3}
@@ -1575,7 +1607,7 @@ PrefabInstance:
     - target: {fileID: 6228101145582832832, guid: 45080bb02691ca841b9dc325d4b68d8a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6228101145582832832, guid: 45080bb02691ca841b9dc325d4b68d8a,
         type: 3}
@@ -1649,7 +1681,7 @@ PrefabInstance:
     - target: {fileID: 6228101145582832832, guid: 45080bb02691ca841b9dc325d4b68d8a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6228101145582832832, guid: 45080bb02691ca841b9dc325d4b68d8a,
         type: 3}
