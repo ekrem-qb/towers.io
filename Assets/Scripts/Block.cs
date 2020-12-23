@@ -35,9 +35,9 @@ public class Block : MonoBehaviour
             {
                 this.transform.localPosition = Vector3.SlerpUnclamped(this.transform.localPosition, targetPos, Time.deltaTime * connectionSpeed);
             }
-            if (this.transform.rotation != Quaternion.identity)
+            if (this.transform.localRotation != Quaternion.identity)
             {
-                this.transform.rotation = Quaternion.SlerpUnclamped(this.transform.rotation, Quaternion.identity, Time.deltaTime * connectionSpeed);
+                this.transform.localRotation = Quaternion.SlerpUnclamped(this.transform.localRotation, Quaternion.identity, Time.deltaTime * connectionSpeed);
             }
             if (this.transform.localScale != targetScale)
             {

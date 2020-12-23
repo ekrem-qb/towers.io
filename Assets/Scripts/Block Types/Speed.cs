@@ -20,7 +20,7 @@ public class Speed : MonoBehaviour
 
             if (joystickDelta != 0)
             {
-                this.transform.localEulerAngles = new Vector3(0, Mathf.LerpAngle(this.transform.localEulerAngles.y, -45 + joystickDelta, Time.deltaTime * rotateSpeed), 0);
+                this.transform.eulerAngles = new Vector3(0, Mathf.LerpAngle(this.transform.eulerAngles.y, -45 + joystickDelta, Time.deltaTime * rotateSpeed), 0);
             }
         }
     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class GridManager : MonoBehaviour
 {
-    CameraTarget target;
+    Pivot pivot;
     List<List<Block>> blockGrid = new List<List<Block>>();
     float sizeX;
     float sizeZ;
@@ -11,7 +11,7 @@ public class GridManager : MonoBehaviour
     int lastUsedColumn = 0;
     void Start()
     {
-        target = GetComponentInChildren<CameraTarget>();
+        pivot = GetComponentInChildren<Pivot>();
         Block originBlock = this.transform.GetComponentInChildren<Block>();
         sizeX = originBlock.transform.localScale.x;
         sizeZ = originBlock.transform.localScale.z;
@@ -108,9 +108,9 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        if (target)
+        if (pivot)
         {
-            target.CenterCamera();
+            pivot.CenterCamera();
         }
     }
 

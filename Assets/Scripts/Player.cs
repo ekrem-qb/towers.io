@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
     public FixedJoystick joystick;
@@ -12,12 +11,23 @@ public class Player : MonoBehaviour
     float maxHealth = 100;
     float speed = 1;
     float minSpeed = 0.25f;
-    void Update()
+    public float rotateSpeed;
+    Rigidbody rb;
+    void Start()
+    {
+        rb = this.GetComponent<Rigidbody>();
+    }
+    void FixedUpdate()
     {
         if (joystick)
         {
-            this.transform.Translate(new Vector3(speed, 0, speed) * joystick.Horizontal);
-            this.transform.Translate(new Vector3(-speed, 0, speed) * joystick.Vertical);
+            float joystickDelta = Mathf.Atan2(joystick.Horizontal, joystick.Vertical) * Mathf.Rad2Deg;
+            if (joystickDelta != 0)
+            {
+                // this.transform.position += (this.transform.forward * speed * ((Mathf.Abs(joystick.Horizontal) + Mathf.Abs(joystick.Vertical)) / 2)) / Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, -45 + joystickDelta));
+                this.transform.eulerAngles = new Vector3(0, Mathf.LerpAngle(this.transform.eulerAngles.y, -45 + joystickDelta, Time.deltaTime * rotateSpeed), 0);
+            }
+            rb.AddForce(this.transform.forward * speed * ((Mathf.Abs(joystick.Horizontal) + Mathf.Abs(joystick.Vertical) / 2)) * Time.deltaTime * 100, ForceMode.Impulse);
         }
     }
     public void AddSpeed(float addValue)
@@ -43,11 +53,18 @@ public class Player : MonoBehaviour
         }
         if (health < 1)
         {
-            foreach (Block block in this.GetComponentsInChildren<Block>())
+            if (this.GetComponentInChildren<Pivot>())
             {
-                block.Disconnect();
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
-            Destroy(this.gameObject);
+            else
+            {
+                foreach (Block block in this.GetComponentsInChildren<Block>())
+                {
+                    block.Disconnect();
+                }
+                Destroy(this.gameObject);
+            }
         }
     }
     public void AddMaxHealth(float addValue)
