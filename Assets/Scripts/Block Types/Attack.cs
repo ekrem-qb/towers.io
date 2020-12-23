@@ -66,7 +66,7 @@ public class Attack : MonoBehaviour
                     Player enemy = nearestBlock.GetComponentInParent<Player>();
                     if (enemy)
                     {
-                        enemy.AddHealth(-1);
+                        enemy.AddHealth(-0.1f);
                     }
                 }
                 else

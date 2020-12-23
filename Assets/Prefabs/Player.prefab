@@ -67,7 +67,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2150111087647993887}
   - component: {fileID: 2150111087647993880}
-  - component: {fileID: 2150111087647993882}
   - component: {fileID: 1852173203925996785}
   m_Layer: 0
   m_Name: Player
@@ -108,28 +107,6 @@ MonoBehaviour:
   speedMeter: {fileID: 0}
   material: {fileID: 2100000, guid: a47508ca3f886ca408c6576410d7c4a8, type: 2}
   rotateSpeed: 1
---- !u!114 &2150111087647993882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2150111087647993886}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: baaad264a24f60346b142e250ef0976a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  blockPrefab: {fileID: 6228101145582832836, guid: 45080bb02691ca841b9dc325d4b68d8a,
-    type: 3}
-  blockTypes:
-  - {fileID: 0}
-  - {fileID: 7508269769143104667, guid: a6411dd8f69826e4c9c5482ab286a569, type: 3}
-  - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
-  - {fileID: 1486985493604394530, guid: 34ce55a742eee124cab6460cd25b3680, type: 3}
-  generateCount: 30
-  randomMinRadius: 50
-  randomMaxRadius: 100
 --- !u!54 &1852173203925996785
 Rigidbody:
   m_ObjectHideFlags: 0

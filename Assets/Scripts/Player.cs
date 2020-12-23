@@ -48,7 +48,7 @@ public class Player : MonoBehaviour
             health += addValue;
             if (healthMeter)
             {
-                healthMeter.text = "❤ " + health;
+                healthMeter.text = "❤ " + (int)health;
             }
         }
         if (health < 1)
