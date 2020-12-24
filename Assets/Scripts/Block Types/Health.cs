@@ -20,6 +20,9 @@ public class Health : MonoBehaviour
     }
     void RestoreHealth()
     {
-        player.AddHealth(healthValue);
+        if (player)
+        {
+            player.AddHealth(healthValue);
+        }
     }
 }

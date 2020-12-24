@@ -13,9 +13,11 @@ public class Player : MonoBehaviour
     float minSpeed = 0.25f;
     public float rotateSpeed;
     Rigidbody rb;
-    void Start()
+    AI ai;
+    void Awake()
     {
         rb = this.GetComponent<Rigidbody>();
+        ai = this.GetComponent<AI>();
     }
     void FixedUpdate()
     {
@@ -53,9 +55,9 @@ public class Player : MonoBehaviour
         }
         if (health < 1)
         {
-            if (this.GetComponentInChildren<Pivot>())
+            if (joystick)
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                // SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
             else
             {
@@ -70,6 +72,14 @@ public class Player : MonoBehaviour
     public void AddMaxHealth(float addValue)
     {
         maxHealth += addValue;
+        if (ai)
+        {
+            ai.ExpandRadius(addValue);
+        }
+    }
+    public float GetMaxHealth()
+    {
+        return maxHealth;
     }
     // void OnMouseDrag()
     // {

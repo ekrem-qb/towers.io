@@ -2,6 +2,11 @@
 using UnityEngine;
 public class Pivot : MonoBehaviour
 {
+    Player player;
+    void Awake()
+    {
+        player = this.GetComponentInParent<Player>();
+    }
     public void CenterCamera()
     {
         List<float> allX = new List<float>();
@@ -18,10 +23,14 @@ public class Pivot : MonoBehaviour
 
         Vector2 center = new Vector2(sizeX / 2, sizeZ / 2);
 
-        float distance = (sizeX + sizeZ) * 2;
-
         this.transform.localPosition = new Vector3(-center.x, 0, -center.y);
-        CameraController cameraController = Camera.main.GetComponent<CameraController>();
-        cameraController.distance = 80 + distance;
+
+        if (player.joystick)
+        {
+            float distance = (sizeX + sizeZ) * 2;
+
+            CameraController cameraController = Camera.main.GetComponent<CameraController>();
+            cameraController.distance = 80 + distance;
+        }
     }
 }

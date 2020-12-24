@@ -7,10 +7,9 @@ public class Block : MonoBehaviour
     Vector3 targetScale;
     public int type;
     public int scale = 1;
-    public bool isConnected;
     public MeshRenderer meshRenderer;
     Material defaultMaterial;
-    Player player;
+    public Player player;
     void Awake()
     {
         defaultMaterial = meshRenderer.material;
@@ -21,15 +20,14 @@ public class Block : MonoBehaviour
 
         if (player)
         {
-            isConnected = true;
-            meshRenderer.material = this.transform.GetComponentInParent<Player>().material;
+            meshRenderer.material = player.material;
         }
 
         targetScale = this.transform.localScale;
     }
     void Update()
     {
-        if (isConnected)
+        if (player)
         {
             if (this.transform.localPosition != targetPos)
             {
@@ -47,23 +45,30 @@ public class Block : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        if (isConnected)
+        if (player)
         {
-            if (!other.transform.IsChildOf(this.transform.parent))
+            Block enemyBlock = other.GetComponent<Block>();
+            if (enemyBlock)
             {
-                Block block = other.GetComponent<Block>();
-                if (block)
+                if (enemyBlock.player != this.player)
                 {
-                    if (!block.isConnected)
+                    if (enemyBlock.player)
                     {
-                        this.GetComponentInParent<GridManager>().AddBlock(block);
-                        if (block.transform.childCount > 0)
+                        Player enemy = enemyBlock.GetComponentInParent<Player>();
+                        if (enemy.GetMaxHealth() < player.GetMaxHealth())
                         {
-                            block.transform.GetChild(0).GetComponents<Behaviour>()[0].enabled = true;
+                            enemy.AddHealth(-enemy.GetMaxHealth());
                         }
-                        block.isConnected = true;
-                        block.player = this.player;
-                        block.meshRenderer.material = this.meshRenderer.material;
+                    }
+                    else
+                    {
+                        this.GetComponentInParent<GridManager>().AddBlock(enemyBlock);
+                        if (enemyBlock.transform.childCount > 0)
+                        {
+                            enemyBlock.transform.GetChild(0).GetComponents<Behaviour>()[0].enabled = true;
+                        }
+                        enemyBlock.player = this.player;
+                        enemyBlock.meshRenderer.material = this.meshRenderer.material;
                         player.AddSpeed(-0.25f);
                         player.AddMaxHealth(5);
                     }
@@ -89,12 +94,11 @@ public class Block : MonoBehaviour
     public void Disconnect()
     {
         player = null;
-        isConnected = false;
         meshRenderer.material = defaultMaterial;
         if (this.transform.childCount > 0)
         {
             this.transform.GetChild(0).GetComponents<Behaviour>()[0].enabled = false;
         }
-        this.transform.SetParent(this.transform.parent.parent);
+        this.transform.SetParent(this.transform.root.parent);
     }
 }

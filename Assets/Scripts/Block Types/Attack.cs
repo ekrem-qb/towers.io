@@ -23,9 +23,9 @@ public class Attack : MonoBehaviour
             Block block = other.GetComponent<Block>();
             if (block)
             {
-                if (!block.transform.IsChildOf(this.transform.parent.parent))
+                if (block.player != this.player)
                 {
-                    if (block.isConnected)
+                    if (block.player)
                     {
                         nearBlocks.Add(block);
                     }
@@ -43,7 +43,7 @@ public class Attack : MonoBehaviour
                 {
                     if (block)
                     {
-                        if (Vector3.Distance(this.transform.position, block.transform.position) < Vector3.Distance(this.transform.position, nearestBlock.transform.position))
+                        if (Vector3.Distance(this.transform.position, block.transform.position) <= Vector3.Distance(this.transform.position, nearestBlock.transform.position))
                         {
                             nearestBlock = block;
                         }
@@ -56,35 +56,35 @@ public class Attack : MonoBehaviour
             }
             if (nearestBlock)
             {
-                if (nearestBlock.isConnected && !nearestBlock.transform.IsChildOf(this.transform.parent.parent))
+                if (nearestBlock.player)
                 {
-                    this.transform.LookAt(nearestBlock.transform);
-                    if (!particles.isPlaying)
+                    if (nearestBlock.player != this.player)
                     {
-                        particles.Play();
-                    }
-                    Player enemy = nearestBlock.GetComponentInParent<Player>();
-                    if (enemy)
-                    {
-                        enemy.AddHealth(-0.1f);
+                        this.transform.LookAt(nearestBlock.transform);
+                        if (!particles.isPlaying)
+                        {
+                            particles.Play();
+                        }
+                        Player enemy = nearestBlock.GetComponentInParent<Player>();
+                        if (enemy)
+                        {
+                            enemy.AddHealth(-0.1f);
+                        }
                     }
                 }
                 else
                 {
                     particles.Stop();
-                    this.transform.localEulerAngles = new Vector3(0, this.transform.localEulerAngles.y + 1, 0);
                 }
             }
             else
             {
                 particles.Stop();
-                this.transform.localEulerAngles = new Vector3(0, this.transform.localEulerAngles.y + 1, 0);
             }
         }
         else
         {
             particles.Stop();
-            this.transform.localEulerAngles = new Vector3(0, this.transform.localEulerAngles.y + 1, 0);
         }
     }
     void OnTriggerExit(Collider other)
@@ -94,9 +94,9 @@ public class Attack : MonoBehaviour
             Block block = other.GetComponent<Block>();
             if (block)
             {
-                if (block.isConnected)
+                if (block.player)
                 {
-                    if (!block.transform.IsChildOf(this.transform.parent.parent))
+                    if (block.player != this.player)
                     {
                         nearBlocks.Remove(block);
                     }

@@ -9,10 +9,10 @@ public class GridManager : MonoBehaviour
     float sizeZ;
     int lastUsedRow = 0;
     int lastUsedColumn = 0;
-    void Start()
+    void Awake()
     {
-        pivot = GetComponentInChildren<Pivot>();
-        Block originBlock = this.transform.GetComponentInChildren<Block>();
+        pivot = this.GetComponent<Pivot>();
+        Block originBlock = this.GetComponentInChildren<Block>();
         sizeX = originBlock.transform.localScale.x;
         sizeZ = originBlock.transform.localScale.z;
         blockGrid.Add(new List<Block>());

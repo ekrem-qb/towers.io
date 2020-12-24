@@ -21,7 +21,7 @@ public class Zone : MonoBehaviour
         {
             if (block)
             {
-                if (block.isConnected)
+                if (block.player)
                 {
                     Player player = block.GetComponentInParent<Player>();
                     if (player)
