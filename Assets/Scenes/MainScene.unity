@@ -43,7 +43,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 0
   m_GISettings:
     serializedVersion: 2
@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -118,6 +118,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -201,6 +203,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.7490196}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -510,6 +513,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &705507995
@@ -694,6 +698,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.7490196}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -790,7 +795,7 @@ PrefabInstance:
     - target: {fileID: 8298420219549216081, guid: 9a2f1ff4676faf2409b86fa275bae1a2,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9a2f1ff4676faf2409b86fa275bae1a2, type: 3}
@@ -898,8 +903,8 @@ MonoBehaviour:
   - {fileID: 7508269769143104667, guid: a6411dd8f69826e4c9c5482ab286a569, type: 3}
   - {fileID: 4484842098305348815, guid: 0b0fdef0e49a56c419b07db83ee705dd, type: 3}
   - {fileID: 1486985493604394530, guid: 34ce55a742eee124cab6460cd25b3680, type: 3}
-  generateCount: 100
-  randomMinRadius: 10
+  generateCount: 200
+  randomMinRadius: 50
   randomMaxRadius: 400
 --- !u!23 &1377577032
 MeshRenderer:
@@ -916,6 +921,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -940,6 +946,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1377577033
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -987,7 +994,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1808039845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1029,6 +1036,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1053,6 +1061,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1808039848
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1145,7 +1154,7 @@ PrefabInstance:
     - target: {fileID: 8298420219549216081, guid: 9a2f1ff4676faf2409b86fa275bae1a2,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9a2f1ff4676faf2409b86fa275bae1a2, type: 3}
@@ -1219,7 +1228,7 @@ PrefabInstance:
     - target: {fileID: 8298420219549216081, guid: 9a2f1ff4676faf2409b86fa275bae1a2,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9a2f1ff4676faf2409b86fa275bae1a2, type: 3}
@@ -1281,6 +1290,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!223 &2034717531
 Canvas:
   m_ObjectHideFlags: 0
@@ -1335,6 +1345,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AngularDrag
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2150111085854907711, guid: df8893a48b773304d917cb3f58c060c6,
+        type: 3}
+      propertyPath: m_Name
+      value: (0,0)
       objectReference: {fileID: 0}
     - target: {fileID: 2150111086830617493, guid: df8893a48b773304d917cb3f58c060c6,
         type: 3}
@@ -1499,7 +1514,7 @@ PrefabInstance:
     - target: {fileID: 8298420219549216081, guid: 9a2f1ff4676faf2409b86fa275bae1a2,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9a2f1ff4676faf2409b86fa275bae1a2, type: 3}

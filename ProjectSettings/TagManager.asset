@@ -4,12 +4,12 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Water
+  - Block
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Block
   - Water
   - UI
   - 

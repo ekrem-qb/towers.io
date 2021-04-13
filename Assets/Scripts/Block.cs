@@ -3,13 +3,17 @@ using System.Collections.Generic;
 public class Block : MonoBehaviour
 {
     public float connectionSpeed;
-    Vector3 targetPos;
-    Vector3 targetScale;
-    public int type;
+    Vector3 targetPos, targetScale;
     public int scale = 1;
     public MeshRenderer meshRenderer;
     Material defaultMaterial;
     public Player player;
+    public int type, x, y;
+    public List<Block> nearSameBlocks = new List<Block>();
+    public float distanceToPivotBlock;
+    public Block topLeft, top, topRight;
+    public Block left, right;
+    public Block bottomLeft, bottom, bottomRight;
     void Awake()
     {
         defaultMaterial = meshRenderer.material;
@@ -20,7 +24,7 @@ public class Block : MonoBehaviour
 
         if (player)
         {
-            meshRenderer.material = player.material;
+            // meshRenderer.material = player.material;
         }
 
         targetScale = this.transform.localScale;
@@ -68,7 +72,7 @@ public class Block : MonoBehaviour
                             enemyBlock.transform.GetChild(0).GetComponents<Behaviour>()[0].enabled = true;
                         }
                         enemyBlock.player = this.player;
-                        enemyBlock.meshRenderer.material = this.meshRenderer.material;
+                        // enemyBlock.meshRenderer.material = enemyBlock.player.material;
                         player.AddSpeed(-0.25f);
                         player.AddMaxHealth(5);
                     }
@@ -86,6 +90,9 @@ public class Block : MonoBehaviour
     public void SetTargetPosition(Vector3 newPos)
     {
         targetPos = newPos;
+        x = (int)(newPos.z / 5);
+        y = (int)(newPos.x / 5);
+        name = "(" + x + "," + y + ")";
     }
     public Vector3 GetTargetPosition()
     {
