@@ -87,16 +87,16 @@ public class Block : MonoBehaviour
 
         scale *= 2;
     }
-    public void SetTargetPosition(Vector3 newPos)
+    public void SetTargetPosition(Vector2Int newPos)
     {
-        targetPos = newPos;
-        x = (int)(newPos.z / 5);
-        y = (int)(newPos.x / 5);
+        targetPos = new Vector3(newPos.y * this.transform.localScale.x, 0, newPos.x * this.transform.localScale.z);
+        x = newPos.x;
+        y = newPos.y;
         name = "(" + x + "," + y + ")";
     }
-    public Vector3 GetTargetPosition()
+    public Vector2Int GetTargetPosition()
     {
-        return targetPos;
+        return new Vector2Int(x, y);
     }
     public void Disconnect()
     {

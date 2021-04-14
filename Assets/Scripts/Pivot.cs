@@ -15,7 +15,7 @@ public class Pivot : MonoBehaviour
         foreach (Block block in this.GetComponentsInChildren<Block>())
         {
             allX.Add(block.GetTargetPosition().x);
-            allZ.Add(block.GetTargetPosition().z);
+            allZ.Add(block.GetTargetPosition().y);
         }
 
         float sizeX = (Mathf.Max(allX.ToArray()) - Mathf.Min(allX.ToArray()));

@@ -5,19 +5,14 @@ public class GridManager : MonoBehaviour
 {
     Pivot pivot;
     List<List<Block>> blockGrid = new List<List<Block>>();
-    float sizeX;
-    float sizeZ;
-    int lastUsedRow = 0;
-    int lastUsedColumn = 0;
     public List<Block> sameBlocks = new List<Block>();
     public List<Block> notSameBlocks = new List<Block>();
     public List<Block> sameFarBlocks = new List<Block>();
+    public Block bestBlock;
     void Awake()
     {
         pivot = this.GetComponent<Pivot>();
         Block originBlock = this.GetComponentInChildren<Block>();
-        sizeX = originBlock.transform.localScale.x;
-        sizeZ = originBlock.transform.localScale.z;
         blockGrid.Add(new List<Block>());
         blockGrid[0].Add(originBlock);
     }
@@ -25,62 +20,97 @@ public class GridManager : MonoBehaviour
     {
         block.transform.SetParent(this.transform);
 
-        if (blockGrid.Count == blockGrid[blockGrid.Count - 1].Count)
+        if (blockGrid[0].Count < 2)
         {
-            if (blockGrid.Count > 1)
+            blockGrid[0].Add(block);
+            block.SetTargetPosition(new Vector2Int(0, 1));
+        }
+        else if (blockGrid[0].Count / blockGrid.Count == 2)
+        {
+            blockGrid.Add(new List<Block>());
+            blockGrid[blockGrid.Count - 1].Add(block);
+            block.SetTargetPosition(new Vector2Int(blockGrid.Count - 1, 0));
+        }
+        else if (blockGrid[0].Count > blockGrid[blockGrid.Count - 1].Count)
+        {
+            for (int x = 1; x < blockGrid.Count; x++)
             {
-                for (int z = 0; z < blockGrid.Count; z++)
+                if (blockGrid[x - 1].Count - blockGrid[x].Count >= 2)
                 {
-                    if (z == 0 && blockGrid[0].Count == blockGrid[blockGrid.Count - 1].Count)
+                    if (x < blockGrid.Count - 1)
                     {
-                        blockGrid[0].Add(block);
-                        lastUsedRow = 0;
-                        block.SetTargetPosition(new Vector3((blockGrid[0].Count - 1) * sizeX, 0, 0));
-                        break;
+                        if (x % 2 != 0)
+                        {
+                            blockGrid[x].Add(block);
+                            block.SetTargetPosition(new Vector2Int(x, blockGrid[x].Count - 1));
+                            break;
+                        }
+                        else if (blockGrid[x].Count - blockGrid[x + 1].Count == 1)
+                        {
+                            blockGrid[x + 1].Add(block);
+                            block.SetTargetPosition(new Vector2Int(x + 1, blockGrid[x + 1].Count - 1));
+                            break;
+                        }
+                        else
+                        {
+                            blockGrid[x].Add(block);
+                            block.SetTargetPosition(new Vector2Int(x, blockGrid[x].Count - 1));
+                            break;
+                        }
                     }
                     else
                     {
-                        if (blockGrid[0].Count != blockGrid[z].Count)
+                        if (x % 2 != 0)
                         {
-                            blockGrid[z].Add(block);
-                            lastUsedRow = z;
-                            block.SetTargetPosition(new Vector3((blockGrid[z].Count - 1) * sizeX, 0, z * sizeZ));
+                            blockGrid[x].Add(block);
+                            block.SetTargetPosition(new Vector2Int(x, blockGrid[x].Count - 1));
+                            break;
+                        }
+                        else
+                        {
+                            blockGrid.Add(new List<Block>());
+                            blockGrid[blockGrid.Count - 1].Add(block);
+                            block.SetTargetPosition(new Vector2Int(blockGrid.Count - 1, 0));
                             break;
                         }
                     }
                 }
+                else if ((blockGrid[0].Count - blockGrid[x].Count) % 2 != 0)
+                {
+                    if (blockGrid[x].Count % 2 != 0)
+                    {
+                        blockGrid[x].Add(block);
+                        block.SetTargetPosition(new Vector2Int(x, blockGrid[x].Count - 1));
+                        break;
+                    }
+                    else if (x % 2 != 0)
+                    {
+                        blockGrid[x].Add(block);
+                        block.SetTargetPosition(new Vector2Int(x, blockGrid[x].Count - 1));
+                        break;
+                    }
+                    else
+                    {
+                        blockGrid[x - 2].Add(block);
+                        block.SetTargetPosition(new Vector2Int(x - 2, blockGrid[x - 2].Count - 1));
+                        break;
+                    }
+                }
             }
-            else
-            {
-                blockGrid[0].Add(block);
-                lastUsedRow = 0;
-                block.SetTargetPosition(new Vector3((blockGrid[0].Count - 1) * sizeX, 0, 0));
-            }
-
+        }
+        else if (blockGrid.Count - blockGrid[0].Count == 2)
+        {
+            blockGrid[0].Add(block);
+            block.SetTargetPosition(new Vector2Int(0, blockGrid[0].Count - 1));
         }
         else if (blockGrid[0].Count == blockGrid[blockGrid.Count - 1].Count)
         {
             blockGrid.Add(new List<Block>());
             blockGrid[blockGrid.Count - 1].Add(block);
-            lastUsedRow = blockGrid.Count - 1;
-            block.SetTargetPosition(new Vector3(0, 0, (blockGrid.Count - 1) * sizeZ));
-        }
-        else if (blockGrid[0].Count == blockGrid[blockGrid.Count - 2].Count)
-        {
-            for (int x = 0; x < blockGrid[0].Count; x++)
-            {
-                if (x >= blockGrid[blockGrid.Count - 1].Count)
-                {
-                    blockGrid[blockGrid.Count - 1].Add(block);
-                    lastUsedRow = blockGrid.Count - 1;
-                    block.SetTargetPosition(new Vector3((blockGrid[blockGrid.Count - 1].Count - 1) * sizeX, 0, (blockGrid.Count - 1) * sizeZ));
-                    break;
-                }
-            }
+            block.SetTargetPosition(new Vector2Int(blockGrid.Count - 1, 0));
         }
 
-        lastUsedColumn = blockGrid[lastUsedRow].IndexOf(block);
-
+        bestBlock = null;
         sameBlocks.Clear();
 
         foreach (List<Block> checkBlockList in blockGrid)
@@ -91,7 +121,7 @@ public class GridManager : MonoBehaviour
                 {
                     if (checkBlock.scale == block.scale)
                     {
-                        checkBlock.distanceToPivotBlock = Vector3.Distance(block.GetTargetPosition(), checkBlock.GetTargetPosition());
+                        checkBlock.distanceToPivotBlock = Vector2.Distance(block.GetTargetPosition(), checkBlock.GetTargetPosition());
                         sameBlocks.Add(checkBlock);
                     }
                 }
@@ -170,7 +200,6 @@ public class GridManager : MonoBehaviour
                     }
                 }
             }
-            Block bestBlock = null;
             int maxNearBlocks = 0;
             foreach (Block originBlock in sameBlocks)
             {
@@ -716,7 +745,6 @@ public class GridManager : MonoBehaviour
             foundNotSameBlocks:
 
                 sameFarBlocks.Remove(bestBlock);
-                bestBlock = null;
 
                 if (notSameBlocks.Count == sameFarBlocks.Count)
                 {
@@ -789,11 +817,11 @@ public class GridManager : MonoBehaviour
     {
         int x_A = blockA.x;
         int y_A = blockA.y;
-        Vector3 pos_A = blockA.GetTargetPosition();
+        Vector2Int pos_A = blockA.GetTargetPosition();
 
         int x_B = blockB.x;
         int y_B = blockB.y;
-        Vector3 pos_B = blockB.GetTargetPosition();
+        Vector2Int pos_B = blockB.GetTargetPosition();
 
         blockGrid[x_A][y_A] = blockB;
         blockB.SetTargetPosition(pos_A);
