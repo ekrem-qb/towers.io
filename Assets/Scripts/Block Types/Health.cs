@@ -16,7 +16,7 @@ public class Health : MonoBehaviour
     }
     void Update()
     {
-        this.transform.localEulerAngles = new Vector3(0, this.transform.localEulerAngles.y + 1, 0);
+        this.transform.localEulerAngles = new Vector3(0, this.transform.localEulerAngles.y + (Time.deltaTime * rotateSpeed * 100), 0);
     }
     void RestoreHealth()
     {

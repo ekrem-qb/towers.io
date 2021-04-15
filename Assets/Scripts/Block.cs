@@ -1,16 +1,15 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 public class Block : MonoBehaviour
 {
     public float connectionSpeed;
-    Vector3 targetPos, targetScale;
+    Vector3 targetPos;
+    public Vector3 targetScale;
     public int scale = 1;
     public MeshRenderer meshRenderer;
     Material defaultMaterial;
     public Player player;
-    public int type, x, y;
-    public List<Block> nearSameBlocks = new List<Block>();
-    public float distanceToPivotBlock;
+    public int type, x, y, badNeighbours, goodNeighbours;
+    public float distanceToBestBlock;
     public Block topLeft, top, topRight;
     public Block left, right;
     public Block bottomLeft, bottom, bottomRight;
@@ -24,7 +23,7 @@ public class Block : MonoBehaviour
 
         if (player)
         {
-            // meshRenderer.material = player.material;
+            meshRenderer.material = player.material;
         }
 
         targetScale = this.transform.localScale;
@@ -72,7 +71,7 @@ public class Block : MonoBehaviour
                             enemyBlock.transform.GetChild(0).GetComponents<Behaviour>()[0].enabled = true;
                         }
                         enemyBlock.player = this.player;
-                        // enemyBlock.meshRenderer.material = enemyBlock.player.material;
+                        enemyBlock.meshRenderer.material = enemyBlock.player.material;
                         player.AddSpeed(-0.25f);
                         player.AddMaxHealth(5);
                     }
@@ -107,5 +106,41 @@ public class Block : MonoBehaviour
             this.transform.GetChild(0).GetComponents<Behaviour>()[0].enabled = false;
         }
         this.transform.SetParent(this.transform.root.parent);
+    }
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        if (top)
+        {
+            Gizmos.DrawCube(top.transform.position, top.transform.localScale);
+        }
+        if (topLeft)
+        {
+            Gizmos.DrawCube(topLeft.transform.position, topLeft.transform.localScale);
+        }
+        if (left)
+        {
+            Gizmos.DrawCube(left.transform.position, left.transform.localScale);
+        }
+        if (bottomLeft)
+        {
+            Gizmos.DrawCube(bottomLeft.transform.position, bottomLeft.transform.localScale);
+        }
+        if (topRight)
+        {
+            Gizmos.DrawCube(topRight.transform.position, topRight.transform.localScale);
+        }
+        if (right)
+        {
+            Gizmos.DrawCube(right.transform.position, right.transform.localScale);
+        }
+        if (bottomRight)
+        {
+            Gizmos.DrawCube(bottomRight.transform.position, bottomRight.transform.localScale);
+        }
+        if (bottom)
+        {
+            Gizmos.DrawCube(bottom.transform.position, bottom.transform.localScale);
+        }
     }
 }

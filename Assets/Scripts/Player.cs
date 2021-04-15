@@ -57,7 +57,7 @@ public class Player : MonoBehaviour
         {
             if (joystick)
             {
-                // SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
             else
             {

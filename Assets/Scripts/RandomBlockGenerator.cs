@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 public class RandomBlockGenerator : MonoBehaviour
 {
@@ -27,14 +26,8 @@ public class RandomBlockGenerator : MonoBehaviour
                 blockMod.transform.SetParent(block.transform);
                 blockMod.transform.localPosition = new Vector3(0, 1, 0);
                 blockMod.transform.localEulerAngles = new Vector3(0, 0, 0);
+                block.name = blockMod.name;
             }
-            // foreach (MeshRenderer renderer in blockMod.GetComponentsInChildren<MeshRenderer>())
-            // {
-            //     if (renderer.GetComponent<MeshFilter>())
-            //     {
-            //         renderer.material = block.meshRenderer.material;
-            //     }
-            // }
 
             blockList.Add(block);
         }

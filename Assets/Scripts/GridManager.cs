@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     Pivot pivot;
-    List<List<Block>> blockGrid = new List<List<Block>>();
+    public List<List<Block>> blockGrid = new List<List<Block>>();
     public List<Block> sameBlocks = new List<Block>();
     public List<Block> notSameBlocks = new List<Block>();
     public List<Block> sameFarBlocks = new List<Block>();
@@ -121,425 +120,161 @@ public class GridManager : MonoBehaviour
                 {
                     if (checkBlock.scale == block.scale)
                     {
-                        checkBlock.distanceToPivotBlock = Vector2.Distance(block.GetTargetPosition(), checkBlock.GetTargetPosition());
+                        checkBlock.badNeighbours = 0;
+                        checkBlock.goodNeighbours = 0;
+                        checkBlock.top = null;
+                        checkBlock.topLeft = null;
+                        checkBlock.left = null;
+                        checkBlock.bottomLeft = null;
+                        checkBlock.topRight = null;
+                        checkBlock.right = null;
+                        checkBlock.bottomRight = null;
+                        checkBlock.bottom = null;
+                        for (int x = checkBlock.x - 1; x <= checkBlock.x + 1; x++)
+                        {
+                            for (int y = checkBlock.y - 1; y <= checkBlock.y + 1; y++)
+                            {
+                                if (x >= 0 && x < blockGrid.Count)
+                                {
+                                    if (y >= 0 && y < blockGrid[x].Count && blockGrid[x].Count > 1)
+                                    {
+                                        if (blockGrid[x][y] != checkBlock)
+                                        {
+                                            if (blockGrid[x][y].scale == checkBlock.scale)
+                                            {
+                                                checkBlock.goodNeighbours++;
+                                                if (blockGrid[x][y].type == checkBlock.type)
+                                                {
+                                                    if (x == checkBlock.x + 1)
+                                                    {
+                                                        if (x % 2 != 0)
+                                                        {
+                                                            if (y == checkBlock.y - 1)
+                                                            {
+                                                                if (y % 2 == 0)
+                                                                {
+                                                                    checkBlock.topRight = blockGrid[x][y];
+                                                                }
+                                                            }
+                                                            else if (y == checkBlock.y)
+                                                            {
+                                                                checkBlock.right = blockGrid[x][y];
+                                                            }
+                                                            else if (y == checkBlock.y + 1)
+                                                            {
+                                                                if (y % 2 != 0)
+                                                                {
+                                                                    checkBlock.bottomRight = blockGrid[x][y];
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    else if (x == checkBlock.x)
+                                                    {
+                                                        if (y == checkBlock.y - 1)
+                                                        {
+                                                            if (y % 2 == 0)
+                                                            {
+                                                                checkBlock.top = blockGrid[x][y];
+                                                            }
+                                                        }
+                                                        else if (y == checkBlock.y + 1)
+                                                        {
+                                                            if (y % 2 != 0)
+                                                            {
+                                                                checkBlock.bottom = blockGrid[x][y];
+                                                            }
+                                                        }
+                                                    }
+                                                    else if (x == checkBlock.x - 1)
+                                                    {
+                                                        if (x % 2 == 0)
+                                                        {
+                                                            if (y == checkBlock.y - 1)
+                                                            {
+                                                                if (y % 2 == 0)
+                                                                {
+                                                                    checkBlock.topLeft = blockGrid[x][y];
+                                                                }
+                                                            }
+                                                            else if (y == checkBlock.y)
+                                                            {
+                                                                checkBlock.left = blockGrid[x][y];
+                                                            }
+                                                            else if (y == checkBlock.y + 1)
+                                                            {
+                                                                if (y % 2 != 0)
+                                                                {
+                                                                    if (blockGrid[x].Count == blockGrid[x + 1].Count)
+                                                                    {
+                                                                        checkBlock.bottomLeft = blockGrid[x][y];
+                                                                    }
+
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                checkBlock.badNeighbours++;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        checkBlock.badNeighbours++;
+                                    }
+                                }
+                                else
+                                {
+                                    checkBlock.badNeighbours++;
+                                }
+                            }
+                        }
                         sameBlocks.Add(checkBlock);
                     }
                 }
             }
         }
-        if (sameBlocks.Count > 4)
+        if (sameBlocks.Count >= 4)
         {
-            sameBlocks.Sort(SortByDistance);
-            sameBlocks.RemoveRange(4, sameBlocks.Count - 4);
-        }
+            sameBlocks.Sort(SortByNeighbours);
+            bestBlock = sameBlocks[0];
 
-        if (sameBlocks.Count == 4)
-        {
-            foreach (Block originBlock in sameBlocks)
+            foreach (Block sameBlock in sameBlocks)
             {
-                originBlock.nearSameBlocks.Clear();
-                for (int x = originBlock.x - 1; x <= originBlock.x + 1; x++)
-                {
-                    for (int y = originBlock.y - 1; y <= originBlock.y + 1; y++)
-                    {
-                        if (x >= 0 && x < blockGrid.Count)
-                        {
-                            if (y >= 0 && y < blockGrid[x].Count && blockGrid[x].Count > 1)
-                            {
-                                if (blockGrid[x][y] != originBlock)
-                                {
-                                    if (blockGrid[x][y].type == originBlock.type && blockGrid[x][y].scale == originBlock.scale)
-                                    {
-                                        originBlock.nearSameBlocks.Add(blockGrid[x][y]);
-
-                                        if (x == originBlock.x + 1)
-                                        {
-                                            if (y == originBlock.y + 1)
-                                            {
-                                                originBlock.topRight = blockGrid[x][y];
-                                            }
-                                            else if (y == originBlock.y)
-                                            {
-                                                originBlock.right = blockGrid[x][y];
-                                            }
-                                            else if (y == originBlock.y - 1)
-                                            {
-                                                originBlock.bottomRight = blockGrid[x][y];
-                                            }
-                                        }
-                                        if (x == originBlock.x)
-                                        {
-                                            if (y == originBlock.y + 1)
-                                            {
-                                                originBlock.top = blockGrid[x][y];
-                                            }
-                                            else if (y == originBlock.y - 1)
-                                            {
-                                                originBlock.bottom = blockGrid[x][y];
-                                            }
-                                        }
-                                        if (x == originBlock.x - 1)
-                                        {
-                                            if (y == originBlock.y + 1)
-                                            {
-                                                originBlock.topLeft = blockGrid[x][y];
-                                            }
-                                            else if (y == originBlock.y)
-                                            {
-                                                originBlock.left = blockGrid[x][y];
-                                            }
-                                            else if (y == originBlock.y - 1)
-                                            {
-                                                originBlock.bottomLeft = blockGrid[x][y];
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            int maxNearBlocks = 0;
-            foreach (Block originBlock in sameBlocks)
-            {
-                if (originBlock.nearSameBlocks.Count > 1)
-                {
-                    if (Mathf.Abs(originBlock.nearSameBlocks[0].x - originBlock.nearSameBlocks[1].x) < 2
-                     && Mathf.Abs(originBlock.nearSameBlocks[0].y - originBlock.nearSameBlocks[1].y) < 2)
-                    {
-                        bestBlock = originBlock;
-                        break;
-                    }
-                    else if (originBlock.nearSameBlocks.Count > 2)
-                    {
-                        if (Mathf.Abs(originBlock.nearSameBlocks[0].x - originBlock.nearSameBlocks[2].x) < 2
-                         && Mathf.Abs(originBlock.nearSameBlocks[0].y - originBlock.nearSameBlocks[2].y) < 2
-                         || Mathf.Abs(originBlock.nearSameBlocks[1].x - originBlock.nearSameBlocks[2].x) < 2
-                         && Mathf.Abs(originBlock.nearSameBlocks[1].y - originBlock.nearSameBlocks[2].y) < 2)
-                        {
-                            bestBlock = originBlock;
-                            break;
-                        }
-                    }
-                }
-                if (originBlock.nearSameBlocks.Count > maxNearBlocks)
-                {
-                    maxNearBlocks = originBlock.nearSameBlocks.Count;
-                    bestBlock = originBlock;
-                }
+                sameBlock.distanceToBestBlock = Vector2.Distance(sameBlock.GetTargetPosition(), bestBlock.GetTargetPosition());
             }
 
-            if (bestBlock != null)
+            if (sameBlocks.Count > 4)
             {
-                notSameBlocks.Clear();
+                sameBlocks.Sort(SortByDistance);
+                sameBlocks.RemoveRange(4, sameBlocks.Count - 4);
+            }
 
-                sameFarBlocks.Clear();
-                sameFarBlocks.AddRange(sameBlocks);
+            if (sameBlocks.Count == 4)
+            {
+                if (bestBlock != null)
+                {
+                    notSameBlocks.Clear();
 
-                if ((bestBlock.bottom && bestBlock.bottomLeft) || (bestBlock.top && bestBlock.topLeft))
-                {
-                    if (bestBlock.bottom && bestBlock.bottomLeft)
+                anotherBestBlock:
+                    sameFarBlocks.Clear();
+                    sameFarBlocks.AddRange(sameBlocks);
+
+                    if ((bestBlock.top && bestBlock.topLeft) || (bestBlock.bottom && bestBlock.bottomLeft))
                     {
-                        sameFarBlocks.Remove(bestBlock.bottom);
-                        sameFarBlocks.Remove(bestBlock.bottomLeft);
-                    }
-                    else if (bestBlock.top && bestBlock.topLeft)
-                    {
-                        sameFarBlocks.Remove(bestBlock.top);
-                        sameFarBlocks.Remove(bestBlock.topLeft);
-                    }
-                    if (blockGrid[bestBlock.x - 1][bestBlock.y].scale == bestBlock.scale)
-                    {
-                        if (blockGrid[bestBlock.x - 1][bestBlock.y].type != bestBlock.type)
+                        if (bestBlock.top && bestBlock.topLeft)
                         {
-                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y]))
-                            {
-                                notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y]);
-                            }
+                            sameFarBlocks.Remove(bestBlock.top);
+                            sameFarBlocks.Remove(bestBlock.topLeft);
                         }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if ((bestBlock.bottom && bestBlock.bottomRight) || (bestBlock.top && bestBlock.topRight))
-                {
-                    if (bestBlock.bottom && bestBlock.bottomRight)
-                    {
-                        sameFarBlocks.Remove(bestBlock.bottom);
-                        sameFarBlocks.Remove(bestBlock.bottomRight);
-                    }
-                    else if (bestBlock.top && bestBlock.topRight)
-                    {
-                        sameFarBlocks.Remove(bestBlock.top);
-                        sameFarBlocks.Remove(bestBlock.topRight);
-                    }
-                    if (bestBlock.y < blockGrid[bestBlock.x + 1].Count)
-                    {
-                        if (blockGrid[bestBlock.x + 1][bestBlock.y].scale == bestBlock.scale)
+                        else if (bestBlock.bottom && bestBlock.bottomLeft)
                         {
-                            if (blockGrid[bestBlock.x + 1][bestBlock.y].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y]);
-                                }
-                            }
-                        }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if ((bestBlock.left && bestBlock.bottomLeft) || (bestBlock.right && bestBlock.bottomRight))
-                {
-                    if (bestBlock.left && bestBlock.bottomLeft)
-                    {
-                        sameFarBlocks.Remove(bestBlock.left);
-                        sameFarBlocks.Remove(bestBlock.bottomLeft);
-                    }
-                    else if (bestBlock.right && bestBlock.bottomRight)
-                    {
-                        sameFarBlocks.Remove(bestBlock.right);
-                        sameFarBlocks.Remove(bestBlock.bottomRight);
-                    }
-                    if (blockGrid[bestBlock.x][bestBlock.y - 1].scale == bestBlock.scale)
-                    {
-                        if (blockGrid[bestBlock.x][bestBlock.y - 1].type != bestBlock.type)
-                        {
-                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y - 1]))
-                            {
-                                notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y - 1]);
-                            }
-                        }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if ((bestBlock.left && bestBlock.topLeft) || (bestBlock.right && bestBlock.topRight))
-                {
-                    if (bestBlock.left && bestBlock.topLeft)
-                    {
-                        sameFarBlocks.Remove(bestBlock.left);
-                        sameFarBlocks.Remove(bestBlock.topLeft);
-                    }
-                    else if (bestBlock.right && bestBlock.topRight)
-                    {
-                        sameFarBlocks.Remove(bestBlock.right);
-                        sameFarBlocks.Remove(bestBlock.topRight);
-                    }
-                    if (bestBlock.y < blockGrid[bestBlock.x].Count - 1)
-                    {
-                        if (blockGrid[bestBlock.x][bestBlock.y + 1].scale == bestBlock.scale)
-                        {
-                            if (blockGrid[bestBlock.x][bestBlock.y + 1].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y + 1]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y + 1]);
-                                }
-                            }
-                        }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if (bestBlock.bottom && bestBlock.left)
-                {
-                    sameFarBlocks.Remove(bestBlock.bottom);
-                    sameFarBlocks.Remove(bestBlock.left);
-                    if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].scale == bestBlock.scale)
-                    {
-                        if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].type != bestBlock.type)
-                        {
-                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y - 1]))
-                            {
-                                notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y - 1]);
-                            }
-                        }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if (bestBlock.bottom && bestBlock.right)
-                {
-                    sameFarBlocks.Remove(bestBlock.bottom);
-                    sameFarBlocks.Remove(bestBlock.right);
-                    if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].scale == bestBlock.scale)
-                    {
-                        if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].type != bestBlock.type)
-                        {
-                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y - 1]))
-                            {
-                                notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y - 1]);
-                            }
-                        }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if (bestBlock.top && bestBlock.left)
-                {
-                    sameFarBlocks.Remove(bestBlock.top);
-                    sameFarBlocks.Remove(bestBlock.left);
-                    if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].scale == bestBlock.scale)
-                    {
-                        if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].type != bestBlock.type)
-                        {
-                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y + 1]))
-                            {
-                                notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y + 1]);
-                            }
-                        }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if (bestBlock.top && bestBlock.right)
-                {
-                    sameFarBlocks.Remove(bestBlock.top);
-                    sameFarBlocks.Remove(bestBlock.right);
-                    if (bestBlock.y < blockGrid[bestBlock.x + 1].Count - 1)
-                    {
-                        if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].scale == bestBlock.scale)
-                        {
-                            if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y + 1]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y + 1]);
-                                }
-                            }
-                        }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if (bestBlock.bottomLeft || bestBlock.bottomRight)
-                {
-                    if (blockGrid[bestBlock.x][bestBlock.y - 1].scale == bestBlock.scale)
-                    {
-                        if (blockGrid[bestBlock.x][bestBlock.y - 1].type != bestBlock.type)
-                        {
-                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y - 1]))
-                            {
-                                notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y - 1]);
-                            }
-                        }
-                    }
-                    if (bestBlock.bottomLeft)
-                    {
-                        sameFarBlocks.Remove(bestBlock.bottomLeft);
-                        if (blockGrid[bestBlock.x - 1][bestBlock.y].scale == bestBlock.scale)
-                        {
-                            if (blockGrid[bestBlock.x - 1][bestBlock.y].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y]);
-                                }
-                            }
-                        }
-                    }
-                    else if (bestBlock.bottomRight)
-                    {
-                        sameFarBlocks.Remove(bestBlock.bottomRight);
-                        if (bestBlock.y < blockGrid[bestBlock.x + 1].Count)
-                        {
-                            if (blockGrid[bestBlock.x + 1][bestBlock.y].scale == bestBlock.scale)
-                            {
-                                if (blockGrid[bestBlock.x + 1][bestBlock.y].type != bestBlock.type)
-                                {
-                                    if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y]))
-                                    {
-                                        notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y]);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if (bestBlock.topLeft || bestBlock.topRight)
-                {
-                    if (bestBlock.y < blockGrid[bestBlock.x].Count - 1)
-                    {
-                        if (blockGrid[bestBlock.x][bestBlock.y + 1].scale == bestBlock.scale)
-                        {
-                            if (blockGrid[bestBlock.x][bestBlock.y + 1].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y + 1]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y + 1]);
-                                }
-                            }
-                        }
-                    }
-                    if (bestBlock.topLeft)
-                    {
-                        sameFarBlocks.Remove(bestBlock.topLeft);
-                        if (blockGrid[bestBlock.x - 1][bestBlock.y].scale == bestBlock.scale)
-                        {
-                            if (blockGrid[bestBlock.x - 1][bestBlock.y].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y]);
-                                }
-                            }
-                        }
-                    }
-                    else if (bestBlock.topRight)
-                    {
-                        sameFarBlocks.Remove(bestBlock.topRight);
-                        if (blockGrid[bestBlock.x + 1][bestBlock.y].scale == bestBlock.scale)
-                        {
-                            if (blockGrid[bestBlock.x + 1][bestBlock.y].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y]);
-                                }
-                            }
-                        }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if (bestBlock.bottom)
-                {
-                    sameFarBlocks.Remove(bestBlock.bottom);
-                    if (bestBlock.x > 0)
-                    {
-                        if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].scale == bestBlock.scale)
-                        {
-                            if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y - 1]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y - 1]);
-                                }
-                            }
+                            sameFarBlocks.Remove(bestBlock.bottom);
+                            sameFarBlocks.Remove(bestBlock.bottomLeft);
                         }
                         if (blockGrid[bestBlock.x - 1][bestBlock.y].scale == bestBlock.scale)
                         {
@@ -551,18 +286,22 @@ public class GridManager : MonoBehaviour
                                 }
                             }
                         }
-                    }
-                    else if (bestBlock.x < blockGrid.Count - 1)
-                    {
-                        if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].scale == bestBlock.scale)
+                        if (notSameBlocks.Count > 0)
                         {
-                            if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y - 1]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y - 1]);
-                                }
-                            }
+                            goto foundNotSameBlocks;
+                        }
+                    }
+                    if ((bestBlock.top && bestBlock.topRight) || (bestBlock.bottom && bestBlock.bottomRight))
+                    {
+                        if (bestBlock.top && bestBlock.topRight)
+                        {
+                            sameFarBlocks.Remove(bestBlock.top);
+                            sameFarBlocks.Remove(bestBlock.topRight);
+                        }
+                        else if (bestBlock.bottom && bestBlock.bottomRight)
+                        {
+                            sameFarBlocks.Remove(bestBlock.bottom);
+                            sameFarBlocks.Remove(bestBlock.bottomRight);
                         }
                         if (bestBlock.y < blockGrid[bestBlock.x + 1].Count)
                         {
@@ -577,71 +316,72 @@ public class GridManager : MonoBehaviour
                                 }
                             }
                         }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if (bestBlock.top)
-                {
-                    sameFarBlocks.Remove(bestBlock.top);
-                    if (bestBlock.x > 0)
-                    {
-                        if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].scale == bestBlock.scale)
+                        if (notSameBlocks.Count > 0)
                         {
-                            if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].type != bestBlock.type)
+                            goto foundNotSameBlocks;
+                        }
+                    }
+                    if ((bestBlock.left && bestBlock.topLeft) || (bestBlock.right && bestBlock.topRight))
+                    {
+                        if (bestBlock.left && bestBlock.topLeft)
+                        {
+                            sameFarBlocks.Remove(bestBlock.left);
+                            sameFarBlocks.Remove(bestBlock.topLeft);
+                        }
+                        else if (bestBlock.right && bestBlock.topRight)
+                        {
+                            sameFarBlocks.Remove(bestBlock.right);
+                            sameFarBlocks.Remove(bestBlock.topRight);
+                        }
+                        if (blockGrid[bestBlock.x][bestBlock.y - 1].scale == bestBlock.scale)
+                        {
+                            if (blockGrid[bestBlock.x][bestBlock.y - 1].type != bestBlock.type)
                             {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y + 1]))
+                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y - 1]))
                                 {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y + 1]);
+                                    notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y - 1]);
                                 }
                             }
                         }
-                        if (blockGrid[bestBlock.x - 1][bestBlock.y].scale == bestBlock.scale)
+                        if (notSameBlocks.Count > 0)
                         {
-                            if (blockGrid[bestBlock.x - 1][bestBlock.y].type != bestBlock.type)
+                            goto foundNotSameBlocks;
+                        }
+                    }
+                    if ((bestBlock.left && bestBlock.bottomLeft) || (bestBlock.right && bestBlock.bottomRight))
+                    {
+                        if (bestBlock.left && bestBlock.bottomLeft)
+                        {
+                            sameFarBlocks.Remove(bestBlock.left);
+                            sameFarBlocks.Remove(bestBlock.bottomLeft);
+                        }
+                        else if (bestBlock.right && bestBlock.bottomRight)
+                        {
+                            sameFarBlocks.Remove(bestBlock.right);
+                            sameFarBlocks.Remove(bestBlock.bottomRight);
+                        }
+                        if (bestBlock.y < blockGrid[bestBlock.x].Count - 1)
+                        {
+                            if (blockGrid[bestBlock.x][bestBlock.y + 1].scale == bestBlock.scale)
                             {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y]))
+                                if (blockGrid[bestBlock.x][bestBlock.y + 1].type != bestBlock.type)
                                 {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y]);
+                                    if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y + 1]))
+                                    {
+                                        notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y + 1]);
+                                    }
                                 }
                             }
                         }
-                    }
-                    else if (bestBlock.x < blockGrid.Count - 1)
-                    {
-                        if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].scale == bestBlock.scale)
+                        if (notSameBlocks.Count > 0)
                         {
-                            if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y + 1]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y + 1]);
-                                }
-                            }
-                        }
-                        if (blockGrid[bestBlock.x + 1][bestBlock.y].scale == bestBlock.scale)
-                        {
-                            if (blockGrid[bestBlock.x + 1][bestBlock.y].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y]);
-                                }
-                            }
+                            goto foundNotSameBlocks;
                         }
                     }
-                    if (notSameBlocks.Count > 0)
+                    if (bestBlock.top && bestBlock.left)
                     {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if (bestBlock.left)
-                {
-                    sameFarBlocks.Remove(bestBlock.left);
-                    if (bestBlock.y > 0)
-                    {
+                        sameFarBlocks.Remove(bestBlock.top);
+                        sameFarBlocks.Remove(bestBlock.left);
                         if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].scale == bestBlock.scale)
                         {
                             if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].type != bestBlock.type)
@@ -652,50 +392,15 @@ public class GridManager : MonoBehaviour
                                 }
                             }
                         }
-                        if (blockGrid[bestBlock.x][bestBlock.y - 1].scale == bestBlock.scale)
+                        if (notSameBlocks.Count > 0)
                         {
-                            if (blockGrid[bestBlock.x][bestBlock.y - 1].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y - 1]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y - 1]);
-                                }
-                            }
+                            goto foundNotSameBlocks;
                         }
                     }
-                    else if (bestBlock.y < blockGrid[bestBlock.x].Count - 1)
+                    if (bestBlock.top && bestBlock.right)
                     {
-                        if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].scale == bestBlock.scale)
-                        {
-                            if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y + 1]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y + 1]);
-                                }
-                            }
-                        }
-                        if (blockGrid[bestBlock.x][bestBlock.y + 1].scale == bestBlock.scale)
-                        {
-                            if (blockGrid[bestBlock.x][bestBlock.y + 1].type != bestBlock.type)
-                            {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y + 1]))
-                                {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y + 1]);
-                                }
-                            }
-                        }
-                    }
-                    if (notSameBlocks.Count > 0)
-                    {
-                        goto foundNotSameBlocks;
-                    }
-                }
-                if (bestBlock.right)
-                {
-                    sameFarBlocks.Remove(bestBlock.right);
-                    if (bestBlock.y > 0)
-                    {
+                        sameFarBlocks.Remove(bestBlock.top);
+                        sameFarBlocks.Remove(bestBlock.right);
                         if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].scale == bestBlock.scale)
                         {
                             if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].type != bestBlock.type)
@@ -706,6 +411,54 @@ public class GridManager : MonoBehaviour
                                 }
                             }
                         }
+                        if (notSameBlocks.Count > 0)
+                        {
+                            goto foundNotSameBlocks;
+                        }
+                    }
+                    if (bestBlock.bottom && bestBlock.left)
+                    {
+                        sameFarBlocks.Remove(bestBlock.bottom);
+                        sameFarBlocks.Remove(bestBlock.left);
+                        if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].scale == bestBlock.scale)
+                        {
+                            if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].type != bestBlock.type)
+                            {
+                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y + 1]))
+                                {
+                                    notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y + 1]);
+                                }
+                            }
+                        }
+                        if (notSameBlocks.Count > 0)
+                        {
+                            goto foundNotSameBlocks;
+                        }
+                    }
+                    if (bestBlock.bottom && bestBlock.right)
+                    {
+                        sameFarBlocks.Remove(bestBlock.bottom);
+                        sameFarBlocks.Remove(bestBlock.right);
+                        if (bestBlock.y < blockGrid[bestBlock.x + 1].Count - 1)
+                        {
+                            if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].scale == bestBlock.scale)
+                            {
+                                if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].type != bestBlock.type)
+                                {
+                                    if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y + 1]))
+                                    {
+                                        notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y + 1]);
+                                    }
+                                }
+                            }
+                        }
+                        if (notSameBlocks.Count > 0)
+                        {
+                            goto foundNotSameBlocks;
+                        }
+                    }
+                    if (bestBlock.topLeft || bestBlock.topRight)
+                    {
                         if (blockGrid[bestBlock.x][bestBlock.y - 1].scale == bestBlock.scale)
                         {
                             if (blockGrid[bestBlock.x][bestBlock.y - 1].type != bestBlock.type)
@@ -716,84 +469,675 @@ public class GridManager : MonoBehaviour
                                 }
                             }
                         }
-                    }
-                    else if (bestBlock.y < blockGrid[bestBlock.x].Count - 1)
-                    {
-                        if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].scale == bestBlock.scale)
+                        if (bestBlock.topLeft)
                         {
-                            if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].type != bestBlock.type)
+                            sameFarBlocks.Remove(bestBlock.topLeft);
+                            if (blockGrid[bestBlock.x - 1][bestBlock.y].scale == bestBlock.scale)
                             {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y + 1]))
+                                if (blockGrid[bestBlock.x - 1][bestBlock.y].type != bestBlock.type)
                                 {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y + 1]);
+                                    if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y]))
+                                    {
+                                        notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y]);
+                                    }
                                 }
                             }
                         }
-                        if (blockGrid[bestBlock.x][bestBlock.y + 1].scale == bestBlock.scale)
+                        else if (bestBlock.topRight)
                         {
-                            if (blockGrid[bestBlock.x][bestBlock.y + 1].type != bestBlock.type)
+                            sameFarBlocks.Remove(bestBlock.topRight);
+                            if (bestBlock.y < blockGrid[bestBlock.x + 1].Count)
                             {
-                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y + 1]))
+                                if (blockGrid[bestBlock.x + 1][bestBlock.y].scale == bestBlock.scale)
                                 {
-                                    notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y + 1]);
+                                    if (blockGrid[bestBlock.x + 1][bestBlock.y].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (notSameBlocks.Count > 0)
+                        {
+                            goto foundNotSameBlocks;
+                        }
+                    }
+                    if (bestBlock.bottomLeft || bestBlock.bottomRight)
+                    {
+                        if (bestBlock.y < blockGrid[bestBlock.x].Count - 1)
+                        {
+                            if (blockGrid[bestBlock.x][bestBlock.y + 1].scale == bestBlock.scale)
+                            {
+                                if (blockGrid[bestBlock.x][bestBlock.y + 1].type != bestBlock.type)
+                                {
+                                    if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y + 1]))
+                                    {
+                                        notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y + 1]);
+                                    }
+                                }
+                            }
+                        }
+                        if (bestBlock.bottomLeft)
+                        {
+                            sameFarBlocks.Remove(bestBlock.bottomLeft);
+                            if (blockGrid[bestBlock.x - 1][bestBlock.y].scale == bestBlock.scale)
+                            {
+                                if (blockGrid[bestBlock.x - 1][bestBlock.y].type != bestBlock.type)
+                                {
+                                    if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y]))
+                                    {
+                                        notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y]);
+                                    }
+                                }
+                            }
+                        }
+                        else if (bestBlock.bottomRight)
+                        {
+                            sameFarBlocks.Remove(bestBlock.bottomRight);
+                            if (blockGrid[bestBlock.x + 1][bestBlock.y].scale == bestBlock.scale)
+                            {
+                                if (blockGrid[bestBlock.x + 1][bestBlock.y].type != bestBlock.type)
+                                {
+                                    if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y]))
+                                    {
+                                        notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y]);
+                                    }
+                                }
+                            }
+                        }
+                        if (notSameBlocks.Count > 0)
+                        {
+                            goto foundNotSameBlocks;
+                        }
+                    }
+                    if (bestBlock.top)
+                    {
+                        sameFarBlocks.Remove(bestBlock.top);
+                        if (bestBlock.x > 0)
+                        {
+                            if (bestBlock.x % 2 != 0)
+                            {
+                                if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y - 1]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y - 1]);
+                                        }
+                                    }
+                                }
+                                if (blockGrid[bestBlock.x - 1][bestBlock.y].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x - 1][bestBlock.y].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y]);
+                                        }
+                                    }
+                                }
+                            }
+                            if (notSameBlocks.Count > 1)
+                            {
+                                goto foundNotSameBlocks;
+                            }
+                            else
+                            {
+                                notSameBlocks.Clear();
+                            }
+                        }
+                        if (bestBlock.x < blockGrid.Count - 1)
+                        {
+                            if (bestBlock.x % 2 == 0)
+                            {
+                                if (bestBlock.y < blockGrid[bestBlock.x + 1].Count - 1)
+                                {
+                                    if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].scale == bestBlock.scale)
+                                    {
+                                        if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].type != bestBlock.type)
+                                        {
+                                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y - 1]))
+                                            {
+                                                notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y - 1]);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (bestBlock.y < blockGrid[bestBlock.x + 1].Count)
+                                {
+                                    if (blockGrid[bestBlock.x + 1][bestBlock.y].scale == bestBlock.scale)
+                                    {
+                                        if (blockGrid[bestBlock.x + 1][bestBlock.y].type != bestBlock.type)
+                                        {
+                                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y]))
+                                            {
+                                                notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y]);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (notSameBlocks.Count > 1)
+                            {
+                                goto foundNotSameBlocks;
+                            }
+                            else
+                            {
+                                notSameBlocks.Clear();
+                            }
+                        }
+                    }
+                    if (bestBlock.bottom)
+                    {
+                        sameFarBlocks.Remove(bestBlock.bottom);
+                        if (bestBlock.x > 0)
+                        {
+                            if (bestBlock.x % 2 != 0)
+                            {
+                                if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y + 1]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y + 1]);
+                                        }
+                                    }
+                                }
+                                if (blockGrid[bestBlock.x - 1][bestBlock.y].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x - 1][bestBlock.y].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y]);
+                                        }
+                                    }
+                                }
+                            }
+                            if (notSameBlocks.Count > 1)
+                            {
+                                goto foundNotSameBlocks;
+                            }
+                            else
+                            {
+                                notSameBlocks.Clear();
+                            }
+                        }
+                        if (bestBlock.x < blockGrid.Count - 1)
+                        {
+                            if (bestBlock.x % 2 == 0)
+                            {
+                                if (bestBlock.y < blockGrid[bestBlock.x + 1].Count - 1)
+                                {
+                                    if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].scale == bestBlock.scale)
+                                    {
+                                        if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].type != bestBlock.type)
+                                        {
+                                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y + 1]))
+                                            {
+                                                notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y + 1]);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (bestBlock.y < blockGrid[bestBlock.x + 1].Count)
+                                {
+                                    if (blockGrid[bestBlock.x + 1][bestBlock.y].scale == bestBlock.scale)
+                                    {
+                                        if (blockGrid[bestBlock.x + 1][bestBlock.y].type != bestBlock.type)
+                                        {
+                                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y]))
+                                            {
+                                                notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y]);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (notSameBlocks.Count > 1)
+                            {
+                                goto foundNotSameBlocks;
+                            }
+                            else
+                            {
+                                notSameBlocks.Clear();
+                            }
+                        }
+                    }
+                    if (bestBlock.left)
+                    {
+                        sameFarBlocks.Remove(bestBlock.left);
+                        if (bestBlock.y > 0)
+                        {
+                            if (bestBlock.y % 2 != 0)
+                            {
+                                if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y - 1]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y - 1]);
+                                        }
+                                    }
+                                }
+                                if (blockGrid[bestBlock.x][bestBlock.y - 1].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x][bestBlock.y - 1].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y - 1]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y - 1]);
+                                        }
+                                    }
+                                }
+                            }
+                            if (notSameBlocks.Count > 1)
+                            {
+                                goto foundNotSameBlocks;
+                            }
+                            else
+                            {
+                                notSameBlocks.Clear();
+                            }
+                        }
+                        if (bestBlock.y < blockGrid[bestBlock.x].Count - 1)
+                        {
+                            if (bestBlock.y % 2 == 0)
+                            {
+                                if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y + 1]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y + 1]);
+                                        }
+                                    }
+                                }
+                                if (blockGrid[bestBlock.x][bestBlock.y + 1].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x][bestBlock.y + 1].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y + 1]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y + 1]);
+                                        }
+                                    }
+                                }
+                            }
+                            if (notSameBlocks.Count > 1)
+                            {
+                                goto foundNotSameBlocks;
+                            }
+                            else
+                            {
+                                notSameBlocks.Clear();
+                            }
+                        }
+                    }
+                    if (bestBlock.right)
+                    {
+                        sameFarBlocks.Remove(bestBlock.right);
+                        if (bestBlock.y > 0)
+                        {
+                            if (bestBlock.y % 2 != 0)
+                            {
+                                if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y - 1]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y - 1]);
+                                        }
+                                    }
+                                }
+                                if (blockGrid[bestBlock.x][bestBlock.y - 1].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x][bestBlock.y - 1].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y - 1]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y - 1]);
+                                        }
+                                    }
+                                }
+                            }
+                            if (notSameBlocks.Count > 1)
+                            {
+                                goto foundNotSameBlocks;
+                            }
+                            else
+                            {
+                                notSameBlocks.Clear();
+                            }
+                        }
+                        if (bestBlock.y < blockGrid[bestBlock.x + 1].Count - 1)
+                        {
+                            if (bestBlock.y % 2 == 0)
+                            {
+                                if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y + 1]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y + 1]);
+                                        }
+                                    }
+                                }
+                                if (blockGrid[bestBlock.x][bestBlock.y + 1].scale == bestBlock.scale)
+                                {
+                                    if (blockGrid[bestBlock.x][bestBlock.y + 1].type != bestBlock.type)
+                                    {
+                                        if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y + 1]))
+                                        {
+                                            notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y + 1]);
+                                        }
+                                    }
+                                }
+                            }
+                            if (notSameBlocks.Count > 1)
+                            {
+                                goto foundNotSameBlocks;
+                            }
+                            else
+                            {
+                                notSameBlocks.Clear();
+                            }
+                        }
+                    }
+                    if (!bestBlock.top && !bestBlock.bottom && !bestBlock.left && !bestBlock.right && !bestBlock.topLeft && !bestBlock.bottomLeft && !bestBlock.topRight && !bestBlock.bottomRight)
+                    {
+                        if (bestBlock.x > 0)
+                        {
+                            if (bestBlock.y > 0)
+                            {
+                                if (bestBlock.y % 2 != 0)
+                                {
+                                    if (blockGrid[bestBlock.x][bestBlock.y - 1].scale == bestBlock.scale)
+                                    {
+                                        if (blockGrid[bestBlock.x][bestBlock.y - 1].type != bestBlock.type)
+                                        {
+                                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y - 1]))
+                                            {
+                                                notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y - 1]);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (bestBlock.x % 2 != 0)
+                                {
+                                    if (bestBlock.y % 2 != 0)
+                                    {
+                                        if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].scale == bestBlock.scale)
+                                        {
+                                            if (blockGrid[bestBlock.x - 1][bestBlock.y - 1].type != bestBlock.type)
+                                            {
+                                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y - 1]))
+                                                {
+                                                    notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y - 1]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (blockGrid[bestBlock.x - 1][bestBlock.y].scale == bestBlock.scale)
+                                    {
+                                        if (blockGrid[bestBlock.x - 1][bestBlock.y].type != bestBlock.type)
+                                        {
+                                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y]))
+                                            {
+                                                notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y]);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (notSameBlocks.Count > 2)
+                                {
+                                    goto foundNotSameBlocks;
+                                }
+                                else
+                                {
+                                    notSameBlocks.Clear();
+                                }
+                            }
+                            if (bestBlock.y < blockGrid[bestBlock.x].Count - 1)
+                            {
+                                if (bestBlock.y % 2 == 0)
+                                {
+                                    if (blockGrid[bestBlock.x][bestBlock.y + 1].scale == bestBlock.scale)
+                                    {
+                                        if (blockGrid[bestBlock.x][bestBlock.y + 1].type != bestBlock.type)
+                                        {
+                                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y + 1]))
+                                            {
+                                                notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y + 1]);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (bestBlock.x % 2 != 0)
+                                {
+                                    if (bestBlock.y % 2 == 0)
+                                    {
+                                        if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].scale == bestBlock.scale)
+                                        {
+                                            if (blockGrid[bestBlock.x - 1][bestBlock.y + 1].type != bestBlock.type)
+                                            {
+                                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y + 1]))
+                                                {
+                                                    notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y + 1]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (blockGrid[bestBlock.x - 1][bestBlock.y].scale == bestBlock.scale)
+                                    {
+                                        if (blockGrid[bestBlock.x - 1][bestBlock.y].type != bestBlock.type)
+                                        {
+                                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x - 1][bestBlock.y]))
+                                            {
+                                                notSameBlocks.Add(blockGrid[bestBlock.x - 1][bestBlock.y]);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (notSameBlocks.Count > 2)
+                                {
+                                    goto foundNotSameBlocks;
+                                }
+                                else
+                                {
+                                    notSameBlocks.Clear();
+                                }
+                            }
+                        }
+                        if (bestBlock.x < blockGrid.Count - 1)
+                        {
+                            if (bestBlock.y > 0)
+                            {
+                                if (bestBlock.y % 2 != 0)
+                                {
+                                    if (blockGrid[bestBlock.x][bestBlock.y - 1].scale == bestBlock.scale)
+                                    {
+                                        if (blockGrid[bestBlock.x][bestBlock.y - 1].type != bestBlock.type)
+                                        {
+                                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y - 1]))
+                                            {
+                                                notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y - 1]);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (bestBlock.x % 2 == 0)
+                                {
+                                    if (bestBlock.y < blockGrid[bestBlock.x + 1].Count - 1)
+                                    {
+                                        if (bestBlock.y % 2 != 0)
+                                        {
+                                            if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].scale == bestBlock.scale)
+                                            {
+                                                if (blockGrid[bestBlock.x + 1][bestBlock.y - 1].type != bestBlock.type)
+                                                {
+                                                    if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y - 1]))
+                                                    {
+                                                        notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y - 1]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (bestBlock.y < blockGrid[bestBlock.x + 1].Count)
+                                    {
+                                        if (blockGrid[bestBlock.x + 1][bestBlock.y].scale == bestBlock.scale)
+                                        {
+                                            if (blockGrid[bestBlock.x + 1][bestBlock.y].type != bestBlock.type)
+                                            {
+                                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y]))
+                                                {
+                                                    notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (notSameBlocks.Count > 2)
+                                {
+                                    goto foundNotSameBlocks;
+                                }
+                                else
+                                {
+                                    notSameBlocks.Clear();
+                                }
+                            }
+                            if (bestBlock.y < blockGrid[bestBlock.x].Count - 1)
+                            {
+                                if (bestBlock.y % 2 == 0)
+                                {
+                                    if (blockGrid[bestBlock.x][bestBlock.y + 1].scale == bestBlock.scale)
+                                    {
+                                        if (blockGrid[bestBlock.x][bestBlock.y + 1].type != bestBlock.type)
+                                        {
+                                            if (!notSameBlocks.Contains(blockGrid[bestBlock.x][bestBlock.y + 1]))
+                                            {
+                                                notSameBlocks.Add(blockGrid[bestBlock.x][bestBlock.y + 1]);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (bestBlock.x % 2 == 0)
+                                {
+                                    if (bestBlock.y < blockGrid[bestBlock.x + 1].Count - 1)
+                                    {
+                                        if (bestBlock.y % 2 == 0)
+                                        {
+                                            if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].scale == bestBlock.scale)
+                                            {
+                                                if (blockGrid[bestBlock.x + 1][bestBlock.y + 1].type != bestBlock.type)
+                                                {
+                                                    if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y + 1]))
+                                                    {
+                                                        notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y + 1]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (bestBlock.y < blockGrid[bestBlock.x + 1].Count)
+                                    {
+                                        if (blockGrid[bestBlock.x + 1][bestBlock.y].scale == bestBlock.scale)
+                                        {
+                                            if (blockGrid[bestBlock.x + 1][bestBlock.y].type != bestBlock.type)
+                                            {
+                                                if (!notSameBlocks.Contains(blockGrid[bestBlock.x + 1][bestBlock.y]))
+                                                {
+                                                    notSameBlocks.Add(blockGrid[bestBlock.x + 1][bestBlock.y]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (notSameBlocks.Count > 2)
+                                {
+                                    goto foundNotSameBlocks;
+                                }
+                                else
+                                {
+                                    notSameBlocks.Clear();
                                 }
                             }
                         }
                     }
-                }
 
-            foundNotSameBlocks:
-
-                sameFarBlocks.Remove(bestBlock);
-
-                if (notSameBlocks.Count == sameFarBlocks.Count)
-                {
-                    for (int i = 0; i < sameFarBlocks.Count; i++)
+                    if (notSameBlocks.Count == 0)
                     {
-                        SwapBlocks(sameFarBlocks[i], notSameBlocks[i]);
-                    }
-                }
-
-                int max_x = 0;
-                int max_y = 0;
-                Block mergePivotBlock = null;
-
-                foreach (Block checkBlock in sameBlocks)
-                {
-                    if (checkBlock.x > 0 && checkBlock.y > 0)
-                    {
-                        if (checkBlock.x > max_x || checkBlock.y > max_y)
+                        if (sameBlocks.IndexOf(bestBlock) < sameBlocks.Count - 1)
                         {
-                            max_x = checkBlock.x;
-                            max_y = checkBlock.y;
-                            mergePivotBlock = checkBlock;
+                            bestBlock = sameBlocks[sameBlocks.IndexOf(bestBlock) + 1];
+                            goto anotherBestBlock;
                         }
                     }
-                }
-                if (mergePivotBlock != null)
-                {
-                    if (mergePivotBlock.type == blockGrid[mergePivotBlock.x][mergePivotBlock.y - 1].type
-                     && mergePivotBlock.scale == blockGrid[mergePivotBlock.x][mergePivotBlock.y - 1].scale)
-                    {
-                        if (mergePivotBlock.type == blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y].type
-                         && mergePivotBlock.scale == blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y].scale)
-                        {
-                            if (mergePivotBlock.type == blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y - 1].type
-                             && mergePivotBlock.scale == blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y - 1].scale)
-                            {
-                                StartCoroutine(Merge(mergePivotBlock,
-                                                     blockGrid[mergePivotBlock.x][mergePivotBlock.y - 1],
-                                                     blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y],
-                                                     blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y - 1]));
 
-                                blockGrid[mergePivotBlock.x][mergePivotBlock.y - 1] = mergePivotBlock;
-                                blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y] = mergePivotBlock;
-                                blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y - 1] = mergePivotBlock;
+                foundNotSameBlocks:
+
+                    sameFarBlocks.Remove(bestBlock);
+
+                    if (notSameBlocks.Count == sameFarBlocks.Count)
+                    {
+                        for (int i = 0; i < sameFarBlocks.Count; i++)
+                        {
+                            SwapBlocks(sameFarBlocks[i], notSameBlocks[i]);
+                        }
+                    }
+
+                    int max_x = 0;
+                    int max_y = 0;
+                    Block mergePivotBlock = null;
+
+                    foreach (Block checkBlock in sameBlocks)
+                    {
+                        if (checkBlock.x > 0 && checkBlock.y > 0)
+                        {
+                            if (checkBlock.x > max_x || checkBlock.y > max_y)
+                            {
+                                max_x = checkBlock.x;
+                                max_y = checkBlock.y;
+                                mergePivotBlock = checkBlock;
+                            }
+                        }
+                    }
+                    if (mergePivotBlock != null)
+                    {
+                        if (mergePivotBlock.type == blockGrid[mergePivotBlock.x][mergePivotBlock.y - 1].type
+                         && mergePivotBlock.scale == blockGrid[mergePivotBlock.x][mergePivotBlock.y - 1].scale)
+                        {
+                            if (mergePivotBlock.type == blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y].type
+                             && mergePivotBlock.scale == blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y].scale)
+                            {
+                                if (mergePivotBlock.type == blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y - 1].type
+                                 && mergePivotBlock.scale == blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y - 1].scale)
+                                {
+                                    Merge(mergePivotBlock,
+                                                         blockGrid[mergePivotBlock.x][mergePivotBlock.y - 1],
+                                                         blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y],
+                                                         blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y - 1]);
+
+                                    blockGrid[mergePivotBlock.x][mergePivotBlock.y - 1] = mergePivotBlock;
+                                    blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y] = mergePivotBlock;
+                                    blockGrid[mergePivotBlock.x - 1][mergePivotBlock.y - 1] = mergePivotBlock;
+                                }
                             }
                         }
                     }
                 }
             }
+
         }
 
         if (pivot)
@@ -801,13 +1145,25 @@ public class GridManager : MonoBehaviour
             pivot.CenterCamera();
         }
     }
-    int SortByDistance(Block a, Block b)
+    int SortByNeighbours(Block a, Block b)
     {
-        if (a.distanceToPivotBlock < b.distanceToPivotBlock)
+        if ((a.badNeighbours - a.goodNeighbours) < (b.badNeighbours - b.goodNeighbours))
         {
             return -1;
         }
-        else if (a.distanceToPivotBlock > b.distanceToPivotBlock)
+        else if ((a.badNeighbours - a.goodNeighbours) > (b.badNeighbours - b.goodNeighbours))
+        {
+            return 1;
+        }
+        return 0;
+    }
+    int SortByDistance(Block a, Block b)
+    {
+        if (a.distanceToBestBlock < b.distanceToBestBlock)
+        {
+            return -1;
+        }
+        else if (a.distanceToBestBlock > b.distanceToBestBlock)
         {
             return 1;
         }
@@ -829,13 +1185,21 @@ public class GridManager : MonoBehaviour
         blockGrid[x_B][y_B] = blockA;
         blockA.SetTargetPosition(pos_B);
     }
-    IEnumerator Merge(Block blockPivot, Block blockOnLeft, Block blockOnTop, Block blockOnLeftTop)
+    void Merge(Block blockPivot, Block blockOnLeft, Block blockOnTop, Block blockOnLeftTop)
     {
-        yield return new WaitForSeconds(0.5f);
 
-        Destroy(blockOnLeft.gameObject);
-        Destroy(blockOnTop.gameObject);
-        Destroy(blockOnLeftTop.gameObject);
+        if (blockOnLeft)
+        {
+            Destroy(blockOnLeft.gameObject);
+        }
+        if (blockOnTop)
+        {
+            Destroy(blockOnTop.gameObject);
+        }
+        if (blockOnLeftTop)
+        {
+            Destroy(blockOnLeftTop.gameObject);
+        }
 
         blockPivot.Merge();
     }
